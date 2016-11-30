@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <script src = react.js></script>
+    <script src = react-dom.js></script>
+    <script src = browser.min.js></script>
+</head>
+<body>
+    <div id = 'page'>
+    </div>
+</body>
+<script type="text/babel">
+    var TodoList = React.createClass({
+        getInitialState : function () {
+            return {
+                todoList : []
+            }
+        },
+        handleChange : function (params) {
+            this.setState({
+                todoList:params
+            })
+        },
+        render:function () {
+            return(
+                    <div>
+                        <addNew onAdd={this.handleChange} todo={this.state.todoList} />
+                        <showNew onDel={this.handleChange} todo={this.state.todoList} />
+                    </div>
+            )
+
+        }
+    });
+    var addNew = React.createClass({
+        handleAdd : function (e) {
+            e.preventDefault();
+            var inputDom = this.refs.inputNew.getDOMNode();
+            var newEle = inputDom.value.trim();
+            var params = this.props.todo;
+            if(newEle !== ''){
+                params.push(newEle);
+                this.props.onAdd(params)
+            }
+            inputDom.value = '';
+        },
+        render:function () {
+            return(
+                    <form onSubmit={this.handleAdd}>
+                        <input type="text" ref="inputNew"  placeholder="请输入..."/>
+                    </form>
+            )
+        }
+    });
+    var showNew = React.createClass({
+        handleDel : function (e) {
+            var delIndex = e.target.getAttribute('data-key');
+            this.props.todo.splice(delIndex,1);
+            this.props.onDel(this.props.todo)
+        },
+        render : function () {
+            return(
+                    <ul>
+                        {this.props.todo.map(function (item,i) {
+                            return(
+                                    <li>
+                                        <label>{item}</label>
+                                        <button onClick={this.handleDel} data-key={i}>删除</button>
+                                    </li>
+                            )
+                        }.bind(this))}
+                    </ul>
+            )
+        }
+    });
+    ReactDOM.render(
+            <TodoList />,
+            document.getElementById('page')
+    )
+</script>
+</html>
